@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * Implements hook_node_insert().
+ */
+function folder_manager_node_insert($node) {
+  //Creates folder structure upon creation of node
+  switch($node->type) {
+    case 'client': {
+      $path = $node->title;
+      break;
+    }
+    case 'template': {
+      $container_id = $node->field_container[LANGUAGE_NONE][0]['target_id'];
+      $container_node = node_load($container_id);
+      $path = $container_node->title . '/' . $node->title;
+      break;
+    }
+    case 'presentation_group': {
+      $container_id = $node->field_container[LANGUAGE_NONE][0]['target_id'];
+      $container_node = node_load($container_id);
+      $template_id = $node->field_template[LANGUAGE_NONE][0]['target_id'];
+      $template_node = node_load($template_id);
+      $path = $container_node->title . '/' . 
+              $template_node->title . '/' . 
+              $node->field_group_position[LANGUAGE_NONE][0]['value'] . '--' . $node->title;
+      break;
+    }
+    default : break;
+  }
+  if ($node->type == 'client' || $node->type == 'template' || $node->type == 'presentation_group') {
+    $dirpath=variable_get('file_public_path', conf_path() . '/files');
+    drupal_mkdir("$dirpath/$path");
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function folder_manager_node_delete($node) {
+  // Removes the folder structure from the files folder.
+  switch($node->type) {
+    case 'client': {
+      $path = $node->title;
+      break;
+    }
+    case 'template': {
+      $container_id = $node->field_container[LANGUAGE_NONE][0]['target_id'];
+      $container_node = node_load($container_id);
+      $path = $container_node->title . '/' . $node->title;
+      break;
+    }
+    case 'presentation_group': {
+      $container_id = $node->field_container[LANGUAGE_NONE][0]['target_id'];
+      $container_node = node_load($container_id);
+      $template_id = $node->field_template[LANGUAGE_NONE][0]['target_id'];
+      $template_node = node_load($template_id);
+      $path = $container_node->title . '/' . 
+              $template_node->title . '/' . 
+              $node->field_group_position[LANGUAGE_NONE][0]['value'] . '--' . $node->title;
+      break;
+    }
+    case 'presentation': {
+      $container_id = $node->field_container[LANGUAGE_NONE][0]['target_id'];
+      $container_node = node_load($container_id);
+      $template_id = $node->field_template[LANGUAGE_NONE][0]['target_id'];
+      $template_node = node_load($template_id);
+      $group_id = $node->field_group[LANGUAGE_NONE][0]['target_id'];
+      $group_node = node_load($group_id);
+      $path = $container_node->title . '/' . 
+              $template_node->title . '/' . 
+              $group_node->field_group_position[LANGUAGE_NONE][0]['value'] . '--' . $group_node->title . '/' . 
+              $node->field_presentation_position[LANGUAGE_NONE][0]['value'] . '--' . $node->title;
+      break;
+    }
+    default : break;
+  }
+  if ($node->type == 'client' || $node->type == 'template' || $node->type == 'presentation_group' || $node->type == 'presentation') {
+    $dirpath=variable_get('file_public_path', conf_path() . '/files');
+    $delete_path = $dirpath . '/' . $path;
+    file_unmanaged_delete_recursive($delete_path);
+  }
+}

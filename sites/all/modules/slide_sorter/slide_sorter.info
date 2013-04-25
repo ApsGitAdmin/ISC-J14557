@@ -1,0 +1,4 @@
+name = Slide Sorter
+description = Code for implementing the Slide Sorter into the player page.
+package = Custom Modules
+core = 7.x

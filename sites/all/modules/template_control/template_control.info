@@ -1,0 +1,4 @@
+name = Template Controller
+description = Code for restricting the numbers of templates available for each product
+package = Custom Modules
+core = 7.x

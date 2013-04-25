@@ -1,0 +1,4 @@
+name = Slide tracking
+description = Retrieves information for tracking reports.
+package = Custom Modules
+core = 7.x

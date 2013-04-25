@@ -1,0 +1,4 @@
+name = Form upload
+description = Changes the default action for uploading powerpoint file.
+package = Custom Modules
+core = 7.x

@@ -1,0 +1,312 @@
+#first-time {
+	display:none;
+}
+
+h1.title {
+	font-weight: normal;
+	color: #00acee;
+}
+
+h1.title a {
+	text-decoration: none;
+	color: #00acee;
+	font-weight: bold;
+}
+
+.view-footer h2,
+.view-player-feedback h2,
+.view-header h2 {
+	font-weight: normal;
+	color: #00acee;
+}
+
+.btn-right {
+	display: inline-block;
+	float:right;
+	margin-right: 5px;
+}
+
+input[type=submit],
+table.tableheader-processed td:nth-child(n+2) a,
+a.webform-submission-next,
+a.webform-submission-previous,
+a#edit-cancel,
+a.slidesorter-btn {
+	text-decoration: none;
+	font-size: small;
+	color: #fff;
+	margin-right: 5px;
+	padding:2px 16px;
+	display: inline-block;
+	background-color: #585858;
+	line-height: 1.8em;
+	border:none;
+}
+
+#swf_1 {
+	display:inline-block;
+	position: absolute;
+	top:0;
+	left:10px;
+	z-index: 100;
+	width:1024px;
+	height:600px;
+	border:solid 1px #666;
+	border-top: none;
+	background: #fff;
+}	
+
+.view-home .view-header {
+	margin: 0;
+}
+
+.view-home .view-header p {
+	margin-top: 0;
+	color:#00acee;
+	font-size: 1.5em;
+}
+
+div.view-home div.view-content {
+	font-size:0;
+	text-align: left;
+}
+
+div.view-home div.view-content div.slideset-row {
+	max-width: 200px;
+	display: inline-block;
+	position: relative;
+	margin: 10px;
+	border:solid 1px #e3e3e3;
+}
+
+div.view-home div.view-content div.slideset-row span {
+	font-size: 16px;
+}
+
+
+
+.view-home table {
+	border-collapse: separate;
+	border-spacing: 20px;
+	margin-top:-20px;
+	table-layout: auto;
+}
+
+.view-home table tr {
+
+}
+
+.view-home table tr td {
+	padding:0;
+	border:solid 1px #e3e3e3;
+}
+
+.view-home span {
+	text-align: center;
+}
+
+.view-home .home-btn {
+	float:left;
+	width:50%;
+}
+
+.view-home .home-logo {
+	padding:0;
+	line-height: normal;
+	max-height: 124px;
+}
+
+.view-home .view a,
+.view-home .manage a {
+	display:block;
+	color: #fff;
+	text-decoration: none;
+	line-height: 32px;
+}
+
+.view-home .view {
+	background: #00acee;
+}
+
+.view-home .manage {
+	background: #82bf37;
+}
+
+#block-slide-tracking-tracking-graph img {
+	margin: 1.5em 0;
+	text-align: center;
+}
+
+.view-header,
+.view-footer,
+.view-presentation-slides,
+#user-manager-userlist {
+	margin:1.5em 0;
+	width:100%;
+}
+
+.view-footer .view-container-folders .folder-row:nth-child(1),
+.view-footer .view-container-feedback .feedback-row:nth-child(1),
+.view-footer .view-folder-presentations .presentation-row:nth-child(1),
+.view-footer .view-presentation-templates .template-row:nth-child(1),
+.view-footer .view-presentation-references .reference-row:nth-child(1),
+.view-footer .view-template-slides .slide-row:nth-child(1),
+.view-presentation-slides .preview-row:nth-child(1),
+#user-manager-userlist .user-row:nth-child(1) {
+	border-top:solid 1px #5f5f5f;
+}
+
+.view-footer .view-container-folders .folder-row,
+.view-footer .view-container-feedback .feedback-row,
+.view-footer .view-folder-presentations .presentation-row,
+.view-footer .view-presentation-templates .template-row,
+.view-footer .view-presentation-references .reference-row,
+.view-footer .view-template-slides .slide-row,
+.view-presentation-slides .preview-row,
+#user-manager-userlist .user-row {
+	background-color: #fff;
+	border-bottom: solid 1px #5f5f5f;
+}
+
+.view-footer .view-container-folders .folder-row:nth-child(odd),
+.view-footer .view-container-feedback .feedback-row:nth-child(odd),
+.view-footer .view-folder-presentations .presentation-row:nth-child(odd),
+.view-footer .view-presentation-templates .template-row:nth-child(odd),
+.view-footer .view-presentation-references .reference-row:nth-child(odd),
+.view-footer .view-template-slides .slide-row:nth-child(odd),
+.view-presentation-slides .preview-row:nth-child(odd),
+#user-manager-userlist .user-row:nth-child(odd) {
+	background-color: #f0f0f0;
+}
+
+.view-home .home-row,
+.view-footer .folder-row,
+.view-footer .feedback-row,
+.view-footer .presentation-row,
+.view-footer .template-row,
+.view-footer .slide-row,
+.view-footer .reference-row,
+.view-presentation-slides .preview-row,
+#user-manager-userlist .user-row {
+	padding:0 10px;
+	line-height: 2.5em;
+}
+
+.view-footer .view-container-feedback .feedback-row label {
+	margin: 0;
+    padding: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    font-weight: normal;
+}
+
+.view-footer .view-container-feedback div.grippie,
+.view-footer .view-container-feedback select,
+.view-footer .view-container-feedback input,
+.view-footer .view-container-feedback textarea,
+.view-footer .view-container-feedback label.option {
+	display: none;
+}
+
+.view-container-feedback form.webform-client-form div > div.form-item {
+	margin:0.5em 0;
+	padding:0.5em 0;
+	border-bottom: solid 1px #ccc;
+}
+
+.view-container-feedback form.webform-client-form div.form-item > div {
+	display: none;
+}
+
+.view-container-feedback form.webform-client-form div > div.form-item:last-of-type {
+	border-bottom: none;
+}
+
+.view-container-feedback form.webform-client-form div.form-item label {
+	line-height: 1em;
+}
+
+form#presentation-node-form .form-item-title,
+form#reference-node-form #edit-field-container,
+form#reference-node-form #edit-field-group,
+form#reference-node-form #edit-field-presentation,
+form#webform-results-download-form fieldset,
+.tabledrag-toggle-weight-wrapper {
+	visibility: hidden;
+	position: absolute;
+}
+
+table.tableheader-processed {
+	width:100%;
+}
+
+table.tableheader-processed th {
+	padding:0 5px;
+}
+
+table.tableheader-processed th a {
+	font-weight: normal;
+	color: #5F5F5F;
+	text-decoration: none;
+}
+
+table.tableheader-processed td {
+	padding:2px 0 2px 5px;
+	line-height: 2.5em;
+}
+
+table.tableheader-processed td form input.form-submit {
+	float:right;
+}
+
+table.tableheader-processed td:nth-child(1) {
+	line-height: 1.2em;
+}
+
+table.tableheader-processed td:nth-child(-n+2) {
+	font-size:90%;
+}
+
+fieldset {
+	border:0;
+	padding:0;
+}
+
+fieldset legend {
+	display:none;
+}
+
+form#webform-component-edit-form div.form-item-form-key,
+form#webform-component-edit-form div.form-item-user-email,
+form#webform-component-edit-form div.form-item-extra-description,
+form#webform-component-edit-form div.form-item-value,
+form#webform-component-edit-form div.form-item-extra-items fieldset,
+form#webform-component-edit-form fieldset#edit-validation,
+form#webform-component-edit-form fieldset#edit-position,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-cols,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-rows,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-resizable,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-width,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-field-prefix,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-field-suffix,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-optrand,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-title-display,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-disabled,
+form#webform-component-edit-form fieldset#edit-display div.form-item-extra-private {
+	visibility: hidden;
+	position: absolute;
+}
+
+form#webform-component-edit-form fieldset{
+	border:none;
+	padding:0;
+}
+
+form#webform-component-edit-form input {
+	margin:0;
+}
+
+form#webform-component-edit-form fieldset legend {
+	visibility: hidden;
+	position: absolute;
+}

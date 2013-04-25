@@ -1,0 +1,4 @@
+name = Folder Manager
+description = Code for managing the folder directories upon node creation/deletion.
+package = Custom Modules
+core = 7.x

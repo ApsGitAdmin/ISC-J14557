@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * Implements hook_form_FORMID_alter().
+ */
+function form_upload_form_presentation_node_form_alter(&$form, &$form_state) {
+  // When adding a presentation, this will return the path the user is attempting to put the file to
+  if($form['#node']->type == 'presentation') {
+
+    $container_node = node_load($form['field_container'][LANGUAGE_NONE]['#default_value'][0]);
+    $container_name = $container_node->title;
+
+    $template_node = node_load($form['field_template'][LANGUAGE_NONE]['#default_value'][0]);
+    $template_name = $template_node->title;
+
+    $group_node = node_load($form['field_group'][LANGUAGE_NONE]['#default_value'][0]);
+    $group_name = $group_node->title;
+
+    $form['ppt_iframe'] = array(
+      '#type' => 'item',
+      '#markup' => '<iframe id="upload_frame" src="http://efient-slide-resource.eu/v2/v2aspx/uploadform.aspx?slideset='.$container_name.'&templatename='.$template_name.'&subname='.$group_name.'" width="668" height="180" frameborder="0"></iframe>',
+      '#suffix' => 'The file <strong>MUST</strong> have finished uploading before you leave this page.',
+      '#weight' => 3,
+      );
+
+    $form['container'] = array(
+      '#type' => 'hidden',
+      '#name' => 'setname',
+      '#value' => $container_name, 
+    );
+
+    $form['template'] = array(
+      '#type' => 'hidden',
+      '#name' => 'templatename',
+      '#value' => $template_name, 
+    );
+
+    $form['group'] = array(
+      '#type' => 'hidden',
+      '#name' => 'subname',
+      '#value' => $group_name, 
+    );
+  }
+}
+
+/**
+ * Adds Javascript code to the add presentation page
+ */
+function form_upload_preprocess_page(&$variables) {
+  if (arg(1) == 'add' && arg(2) == 'presentation') {
+    global $theme;
+    $path = drupal_get_path('theme', $theme);
+    // Add Javascript code to the page
+    drupal_add_js($path.'/js/copy-title.js', array('type' => 'file', 'scope' => 'footer'));
+  }
+}

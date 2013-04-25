@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * Preprocess function for views-view-fields.tpl.php.
+ */
+function template_control_preprocess_views_view(&$variables) {
+  // Checks to see if the view is the template display
+  if ($variables['name'] === 'presentation_templates') {
+    $template_num = count($variables['view']->result);
+    if ($template_num > 1) {
+    	unset($variables['footer']);
+    }
+  }
+}

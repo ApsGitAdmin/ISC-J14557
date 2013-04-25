@@ -1,0 +1,515 @@
+<?php
+
+/**
+ * @file
+ * user_manager.module module
+ * UI For a better User Management experience for Client Managers.
+ */
+
+require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'user_manager') . "/includes/constants.inc";
+
+/**
+ * Implements hook_menu().
+ */
+function user_manager_menu(){
+  // User Manager main page (User list).
+  $items['user-manager'] = array(
+    'title' => 'User Manager',
+    'description' => 'List of users the current user can edit.',
+    'page callback' => 'user_manager_userlist',
+    'access arguments' => array('access the user manager'),
+    // TODO: Maybe change the type so that it gets a link somewhere?
+    'type' => MENU_CALLBACK,
+    'file' => 'user_manager.pages.inc',
+  );
+  // User Manager (Add User page).
+  $items['user-manager/add'] = array(
+    'title' => 'Add new user',
+    'description' => 'User add form for Content Managers',
+    'page callback' => 'user_manager_adduser',
+    'access arguments' => array('access the user manager'),
+    'type' => MENU_CALLBACK,
+    'file' => 'user_manager.pages.inc',
+  );
+  // Edit a specific user account.
+  $items['user-manager/%edited_user'] = array(
+    'title' => 'Details',
+    'description' => 'Edit a specific user account',
+    'page callback' => 'user_manager_edituser',
+    'page arguments' => array(1),
+    'access arguments' => array('access the user manager'),
+    'type' => MENU_CALLBACK,
+    'file' => 'user_manager.pages.inc',
+  );
+  // Edit a specific user account.
+  $items['user-manager/%edited_user/edit'] = array(
+    'title' => 'Details',
+    'page arguments' => array(1),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0,
+  );
+  // Change privileges for a specific user account.
+  $items['user-manager/%edited_user/privileges'] = array(
+    'title' => 'Privileges',
+    'page callback' => 'user_manager_privileges',
+    'page arguments' => array(1),
+    'access arguments' => array('access the user manager'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1,
+    'file' => 'user_manager.hierarchical_select.inc',
+  );
+  // Delete a specific user account.
+  $items['user-manager/%edited_user/delete'] = array(
+    'title' => 'Delete',
+    'page callback' => 'user_manager_delete',
+    'page arguments' => array(1),
+    'access arguments' => array('access the user manager'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+    'file' => 'user_manager.pages.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Loads the user account that is going to be edited.
+ *
+ * @return Object
+ *   An user account.
+ *
+ * @ingroup hook_menu() wildcard.
+ */
+function edited_user_load($uid) {
+  $manageable_users = user_manager_get_manageable_users();
+
+  if (in_array($uid, array_keys($manageable_users))) {
+    return $manageable_users[$uid];
+  }
+  else {
+    return FALSE;
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function user_manager_permission() {
+  return array(
+    'access the user manager' =>  array(
+      'title' => t('Use the User Manager'),
+      'description' => t('Manage Users through the User Manager.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function user_manager_theme() {
+  return array(
+    'user_manager_userlist' => array(
+      'variables' => array('accounts' => array()),
+      'file' => 'theme/theme.inc',
+    ),
+  );
+}
+
+function user_manager_og_membership_multiple($gids = array(), $entity_type) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'og_membership')
+    ->propertyCondition('group_type', 'node')
+    ->propertyCondition('entity_type', $entity_type)
+    ->propertyCondition('gid', $gids, 'IN');
+
+  $result = $query->execute();
+
+  if (!empty($result['og_membership'])) {
+//    dpm($result['og_membership']);
+    return $result['og_membership'];
+  }
+  return array();
+}
+
+/**
+ * TODO: Document this. Maybe some refactoring as well?
+ * @return array
+ */
+function user_manager_get_manageable_users() {
+  global $user;
+  $user_accounts_list = array();
+  $all_user_accounts = user_load_multiple(FALSE);
+  $is_current_user_superadmin = user_manager_current_user_administrator();
+
+  // For the Super Administrator, all roles should be displayed.
+  if ($is_current_user_superadmin) {
+    $user_accounts_list = $all_user_accounts;
+  }
+  // For Client Managers, only users within their organization.
+  else {
+    $user_managed_clients_nodes = user_manager_get_user_client_nodes();
+
+    // If the user is not a manager of any client, don't allow him to do anything.
+    if (empty($user_managed_clients_nodes)) {
+      drupal_set_message('You are not Manager of any Client, so you can\'t manage any user accounts.', 'error');
+    }
+    // Otherwise, show the list with the users the Manager can work with.
+    else {
+      // Client nodes IDs.
+      $user_managed_clients_nids = array_keys($user_managed_clients_nodes);
+
+      /*  AM - Removed as there are no sub-groups
+
+      // Need to get every sub-group (Product) attached to the Client Nodes.
+      $client_product_memberships = user_manager_og_membership_multiple($user_managed_clients_nids, 'node');
+
+      $client_product_nodes = array();
+      foreach ($client_product_memberships as $membership_id => $membership_meta) {
+        $membership = og_membership_load($membership_id);
+        $client_product_nodes[] = $membership->etid;
+      }
+      /dpm($client_product_nodes);
+
+      */
+
+      /*  AM - Removed as there are no sub-groups
+
+      // Need to get every sub-group (Event) attached to the Product Nodes.
+      $product_event_memberships = user_manager_og_membership_multiple($client_product_nodes, 'node');
+      $product_event_nodes = array();
+      foreach ($product_event_memberships as $membership_id => $membership_meta) {
+        $membership = og_membership_load($membership_id);
+        $product_event_nodes[] = $membership->etid;
+      }
+      //dpm($product_event_nodes);
+
+      */
+
+      /*  AM - Removed
+
+      // All the sub-groups for all the managed clients by the current Client Manager.
+      $client_subgroups_nodes = array_merge($client_product_nodes, $product_event_nodes);
+      //dpm($client_subgroups_nodes);
+
+      */
+
+      /*  AM - Removed as there are no sub-groups
+
+      // All user memberships for sub-groups of the current Client Manager.
+      $client_managed_user_memberships = user_manager_og_membership_multiple($client_subgroups_nodes, 'user');
+      $client_managed_users_uids = array();
+      foreach ($client_managed_user_memberships as $membership_id => $membership_meta) {
+        // $membership_id is as well in $membership_meta->id;
+        $membership = og_membership_load($membership_id);
+        // Specify the key (User ID), to avoid duplicates in the array of user.
+        $client_managed_users_uids[$membership->etid] = $membership->etid;
+      }
+
+      */
+
+      // All the users managed by the current Content Manager.
+      $user_accounts_list = user_load_multiple(array_keys($user_managed_clients_nids));
+      // Filter users with the Client Manager or Super Administrator role out.
+      foreach ($user_accounts_list as $account_id => $account) {
+        if (in_array(SLIDESORTER_ROLES_CONTENT_ADMINISTRATOR, $account->roles) || $is_current_user_superadmin) {
+          unset($user_accounts_list[$account_id]);
+        }
+      }
+
+      // Users might have been created by a Client Manager but not assigned to any
+      // Client project yet. In this case, the Client Manager that created them
+      // should be able to access them in any way. $user->data['client_manager_owner']
+      // contains the uid of the user that created a user. If it exists, and it's
+      // the current user, add to the $user_accounts_list array, if it's not
+      // already there. Users with the Client Manager role are not added!
+
+      /* AM - Removed as there is no Client Manager level, only content administrator
+
+      foreach ($all_user_accounts as $account_id => $account) {
+        if (is_array($account->data) && isset($account->data['client_manager_owner'])) {
+          if (!isset($user_accounts_list[$account_id]) && $account->data['client_manager_owner'] == $user->uid && !in_array(SLIDESORTER_ROLES_CLIENT_MANAGER, $account->roles)) {
+            $user_accounts_list[$account_id] = $account;
+          }
+        }
+      }
+
+      */
+    }
+  }
+
+  // For admins or Client Managers, remove the own account, content administrator, $user 1, and $user 0.
+  unset ($user_accounts_list[0]);
+  unset ($user_accounts_list[1]);
+  unset ($user_accounts_list[$user->uid]);
+
+  return $user_accounts_list;
+}
+
+function user_manager_get_user_client_nodes() {
+  try {
+    // Remove all groups but "Client" groups.
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+      ->entityCondition('bundle', SLIDESORTER_CLIENT_CONTENT_TYPE);
+
+      /* AM - Not necessary for Slide Sorter
+
+    // If not a super administrator, only return the Clients manageable by
+    // the user.
+
+    if (!user_manager_current_user_administrator()) {
+      // Get all user groups.
+      $user_gids = og_get_groups_by_user(NULL, 'node');
+      if (!empty($user_gids)) {
+        $query->entityCondition('entity_id', $user_gids, 'IN');
+      }
+      else {
+        return array();
+      }
+    }
+
+      */
+
+    $result = $query->execute();
+    return $result['node'];
+  }
+  catch (Exception $e) {
+    drupal_set_message(t($e->getMessage()), 'error');
+    return array();
+  }
+}
+
+function user_manager_current_user_administrator() {
+  global $user;
+  // return in_array(SLIDESORTER_ROLES_SUPER_ADMINISTRATOR, $user->roles);
+  $admin = array_intersect(array(SLIDESORTER_ROLES_SUPER_ADMINISTRATOR, SLIDESORTER_ROLES_CONTENT_ADMINISTRATOR), $user->roles);
+  if (!empty($admin)) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * Put here because is used from both user_manager.pages.inc and
+ * user_manager.hierarchical_select.inc.
+ *
+ * Redirects the user to the User Manager main page.
+ */
+function user_manager_return_dashboard($form, &$form_state) {
+  if ($form_state['clicked_button']['#id'] == 'edit-cancel-button') {
+//  form_clear_error();
+
+    // form_clear_error doesn't seem to work at this point, because the messages
+    // have already been sent to the $messages static holder. There has to be
+    // a better way to do this, but it's ok to do this here, as clicking on cancel
+    // will always trigger the redirect, and there are no extra operations to do.
+    drupal_get_messages('error');
+    drupal_goto('user-manager');
+  }
+}
+
+function user_manager_og_load_role_by_name($role_name, $bundle) {
+  $role = db_query("SELECT rid, name FROM {og_role} WHERE gid = :gid AND name = :name AND group_bundle = :bundle ORDER BY rid",
+    array(':gid' => 0, 'name' => $role_name, ':bundle' => $bundle))->fetchAssoc();
+  return (object) $role;
+}
+
+/**
+ * Implements hook_og_role_grant().
+ */
+function user_manager_og_role_grant($entity_type, $gid, $uid, $rid) {
+  if ($entity_type == 'node') {
+    $group_node = node_load($gid);
+    $role_granted = og_role_load($rid);
+
+//    // If a User has been granted the Group Manager role for a Client group,
+//    // grant him the global Client Manager role.
+//    if ($group_node->type == SLIDESORTER_CLIENT_CONTENT_TYPE && $role_granted->name == SLIDESORTER_GROUP_ROLES_MANAGER) {
+//      $user = user_load($uid);
+//      if (!in_array(SLIDESORTER_ROLES_CLIENT_MANAGER, $user->roles)) {
+//        $client_manager_global_role = user_role_load_by_name(SLIDESORTER_ROLES_CLIENT_MANAGER);
+//        $user->roles[$client_manager_global_role->rid] = $client_manager_global_role->name;
+//        user_save($user);
+//      }
+//    }
+
+    /* AM - Removed as there are no sub-groups
+
+    // If a User has been granted the Group Manager, or Administrator member role,
+    // extend it with the Administrator member role for all the levels below.
+
+    if ($role_granted->name == SLIDESORTER_GROUP_ROLES_MANAGER || $role_granted->name == SLIDESORTER_GROUP_ROLES_ADMINISTRATOR) {
+      // Get all sub-groups for the current group.
+      $subgroup_nodes = user_manager_get_group_subgroups($gid);
+
+      // For each of them, add the user, get the RID of the Administrator member
+      // role, and assign it to the user.
+      foreach($subgroup_nodes as $subgroup) {
+        try {
+          // Add the user to the group.
+          $membership = og_membership_create('node', $subgroup->nid, 'user', $uid, 'og_user_node');
+          $save_membership = og_membership_save($membership);
+
+          // Assign the Administrator member role to the user.
+          $admin_role = user_manager_og_load_role_by_name(SLIDESORTER_GROUP_ROLES_ADMINISTRATOR, $subgroup->type);
+          og_role_grant('node', $subgroup->nid, $uid, $admin_role->rid);
+        }
+        catch (Exception $e) {}
+      }
+
+      // And that's it. og_role_grant will trigger hook_og_role_grant() for each
+      // of the subgroups, which will do the same recursively until there are
+      // no more subgroups.
+    }
+
+    */
+
+  }
+}
+
+/**
+ * Makes sure that all managers / administrators from a group are added as
+ * administrators of a subgroup when this is created.
+ *
+ * Implements hook_og_membership_insert().
+ */
+
+/* AM - Removed as there are no sub-groups for the organic group of client
+
+function user_manager_og_membership_insert(OgMembership $og_membership) {
+  // For this we only care about node memberships.
+  if ($og_membership->entity_type == 'node') {
+    $node_added = node_load($og_membership->etid);
+
+    // Only act when the node added as member is a group.
+    if (isset($node_added->group_group)) {
+      // Get all users of the current group.
+      $user_memberships = user_manager_og_membership_multiple(array($og_membership->gid), 'user');
+
+      foreach ($user_memberships as $membership_id => $membership_meta) {
+        $membership = og_membership_load($membership_id);
+
+        // This is just for readability. It's enough to load the user_membership,
+        // since it's smaller and faster than loading a user object, and the ->etid
+        // property contains the User ID, which is the only thing we need.
+        $user = new stdClass();
+        $user->uid = $membership->etid;
+
+        $user_group_roles = og_get_user_roles('node', $og_membership->gid, $user->uid, FALSE);
+
+        // Only add to the subgroup, the users that are group manager or administrator
+        // member in this group.
+        if (array_intersect($user_group_roles, array(SLIDESORTER_GROUP_ROLES_MANAGER, SLIDESORTER_GROUP_ROLES_ADMINISTRATOR))) {
+          try {
+            // Add the user to the group.
+            $membership = og_membership_create('node', $node_added->nid, 'user', $user->uid, 'og_user_node');
+            $save_membership = og_membership_save($membership);
+
+            // Assign the Administrator member role to the user.
+            $admin_role = user_manager_og_load_role_by_name(SLIDESORTER_GROUP_ROLES_ADMINISTRATOR, $node_added->type);
+            og_role_grant('node', $node_added->nid, $user->uid, $admin_role->rid);
+          }
+          catch (Exception $e) {}
+        }
+      }
+    }
+  }
+}
+
+*/
+
+/**
+ * Makes sure that users are removed from all the levels below when they're
+ * removed from a group.
+ *
+ * Implements hook_og_membership_delete().
+ */
+
+/* AM - Removed as there are no sub-groups for the organic group of client
+
+function user_manager_og_membership_delete(OgMembership $og_membership) {
+//  dpm($og_membership);
+  // Only act on 'user' entity types.
+  if ($og_membership->entity_type == 'user') {
+    // Get all subgroups.
+    $subgroup_nodes = user_manager_get_group_subgroups($og_membership->gid);
+
+    // For each of them, remove the user. Subgroups of these will be tackled
+    // recursively.
+    foreach ($subgroup_nodes as $subgroup) {
+      $membership_to_delete = og_get_membership('node', $subgroup->nid, 'user', $og_membership->etid);
+      if ($membership_to_delete) {
+        og_membership_delete($membership_to_delete->id);
+      }
+    }
+  }
+}
+
+*/
+
+/**
+ * Returns all the subgroups for a given group, or an empty array if there are
+ * no subgroups.
+ *
+ * @param $gid
+ *
+ * @return array
+ *  An array of node objects.
+ */
+
+/* AM - Removed
+
+
+function user_manager_get_group_subgroups($gid) {
+  $group_memberships = user_manager_og_membership_multiple(array($gid), 'node');
+
+  if ($group_memberships) {
+    // $subgroup_nodes will contain all the nodes of the group that are groups
+    // as well (i.e subgroups).
+    $subgroup_nodes = array();
+
+    foreach ($group_memberships as $membership_id => $membership_meta) {
+      $membership = og_membership_load($membership_id);
+      $children_node = node_load($membership->etid);
+
+      // If the node being checked is a group as well, add to the $subgroup_nodes.
+      if (isset($children_node->group_group[LANGUAGE_NONE][0]['value']) && $children_node->group_group[LANGUAGE_NONE][0]['value'] == '1') {
+        $subgroup_nodes[$children_node->nid] = $children_node;
+      }
+    }
+    return $subgroup_nodes;
+  }
+  else {
+    return array();
+  }
+}
+
+*/
+
+
+/**
+ * Implements hook_node_insert().
+ */
+function user_manager_node_insert($node) {
+  if (isset($node->group_group)) {
+    // At this point, we want to add all the Content Administrators and Administrators
+    // as group administrators of this group.
+    $rids = $administrators = array();
+    $rids = db_query("SELECT rid FROM {role} WHERE name IN (:names)", array(':names' => array(SLIDESORTER_ROLES_CONTENT_ADMINISTRATOR, SLIDESORTER_ROLES_SUPER_ADMINISTRATOR)))->fetchCol();
+    $administrators = db_query("SELECT uid FROM {users_roles} WHERE rid IN (:rids)", array(':rids' => $rids))->fetchCol();
+    foreach($administrators as $administrator) {
+      try {
+        // Add the user to the group.
+        $membership = og_membership_create('node', $node->nid, 'user', $administrator, 'og_user_node');
+        $save_membership = og_membership_save($membership);
+
+        // Assign the Administrator member role to the user.
+        $admin_role = user_manager_og_load_role_by_name(SLIDESORTER_GROUP_ROLES_MANAGER, $node->type);
+        og_role_grant('node', $node->nid, $administrator, $admin_role->rid);
+        watchdog('User Manager', 'User @uid added as group administrator to node @nid', array('@uid' => $administrator, '@nid' => $node->nid));
+      }
+      catch (Exception $e) {}
+    }
+    
+  }
+}

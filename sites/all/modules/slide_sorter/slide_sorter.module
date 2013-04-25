@@ -1,0 +1,115 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+function slide_sorter_menu() {
+  $items = array();
+
+  $items['player/%'] = array(
+    'title' => t('Player'),
+    'description' => t('Description'),
+    'page callback' => 'slide_sorter_embed',
+    'page arguments' => array(1),
+    'access callback' => 'slide_sorter_access_container',
+    'access arguments' => array(1),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * A simple function that loads an SWF file and sends it as a page to the client.
+ * 
+ * @return
+ *   Returns HTML as a string.
+ */
+function slide_sorter_embed($container) {
+  global $user;
+
+  $user_access = slide_sorter_access_level($user, $container);
+  // Creates a new object wrapping the given file (path)
+  $swf = new SWFObject('http://www.efient-slide-resource.eu/v2/slidesorterv2.swf');
+
+  // With that object, first we add a param to allow full screen.
+  $swf->param('bgcolor', 'FFFFFF')
+    ->param('align', 'center')
+
+    // Set variables for the Slide Sorter application
+    ->flashVar('slidepath', $container)
+    ->flashVar('user', $user->name)
+    ->flashVar('access_level', $user_access)
+
+    // Set the height and width of the player.
+    ->width(1024)
+    ->height(600)
+
+    // Set a message for non-Flash capable clients.
+    ->noFlash('Install flash.')
+
+   // Declare the minimal Flash version required for this object.
+    ->minimumVersion('9.0.28');
+
+  // Theme the object and return that to the client.
+  return theme('swfembed_embed', array('swf' => $swf));
+}
+
+/**
+ * Returns the access right for this user, returns TRUE if the user can view content
+ */
+function slide_sorter_access_container($container) {
+  global $user;
+
+  $user_groups_id = og_get_groups_by_user($user,'node');
+  $user_groups_nodes = node_load_multiple($user_groups_id);
+
+  foreach ($user_groups_nodes as $nid => $node) {
+    if($container === $node->title) {
+      return TRUE;
+    }
+  }
+}
+
+/**
+ * Returns the name of the access level this user has
+ */
+function slide_sorter_access_level($user, $container) {
+  $user_groups_id = og_get_groups_by_user($user,'node');
+  $user_groups_nodes = node_load_multiple($user_groups_id);
+  foreach ($user_groups_nodes as $nid => $node) {
+    $user_roles_in_group = og_get_user_roles('node', $nid, $user->uid);
+    if($container == $node->title) {
+      $is_manager = in_array('group manager', $user_roles_in_group);
+      $is_member = in_array('member', $user_roles_in_group);
+      if(!empty($is_manager)) {
+        return 'manager';
+      } else if(!empty($is_member)) {
+        return 'member';
+      } else return FALSE;
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORMID_alter().
+ */
+function slide_sorter_form_webform_configure_form_alter(&$form, &$form_state) {
+  // Check that we have the correct type of webform.
+  if ($form['#node']->type == 'client') {
+    // Set default values for the redirection as we want submissions to go to our custom page.
+    // $form['submission']['redirection']['redirect']['#default_value'] = 'url';
+    // $form['submission']['redirection']['redirect_url']['#default_value'] = 'node/%nid/download';
+    // Disabling these fields as we're forcing them to a certain value.
+    $form['submission']['redirection']['redirect']['#disabled'] = TRUE;
+    $form['submission']['redirection']['redirect_url']['#disabled'] = TRUE;
+  }
+}
+
+/**
+ * Implements hook_insert().
+ */
+function slide_sorter_node_insert($node) {
+  // Force the poster webform to be saved with a specific redirect url.
+  if ($node->type == 'client') {
+    $node->webform['redirect_url'] = 'player/%title';
+  }
+}

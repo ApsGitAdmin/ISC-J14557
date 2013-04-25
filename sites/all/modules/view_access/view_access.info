@@ -1,0 +1,4 @@
+name = Views access restriction
+description = Restrics access to views dependant on user rights.
+package = Custom Modules
+core = 7.x

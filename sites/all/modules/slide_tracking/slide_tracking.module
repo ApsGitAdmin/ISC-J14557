@@ -1,0 +1,102 @@
+<?php
+
+$tracking_database = array(
+      'database' => 'inscience_1',
+      'username' => 'inscience',
+      'password' => '3fi3nT',
+      'host' => 'mysql.interdns.co.uk',
+      'port' => '',
+      'driver' => 'mysql',
+      'prefix' => '',
+  );
+
+Database::addConnectionInfo('slidesorter', 'default', $tracking_database);
+
+
+/**
+ * Preprocess function for views-view-fields.tpl.php.
+ */
+function slide_tracking_preprocess_views_view(&$variables) {
+  if ($variables['view']->name === 'container_view') {
+    $client_id = $variables['view']->args[0];
+    $client_node = node_load($client_id);
+    $client_graph = slide_tracking_build_graph($client_node->title);
+  }
+}
+
+/**
+ * return list of content
+ */
+function slide_tracking_build_graph($container){
+  // Connects to secondary server
+  db_set_active('slidesorter');
+
+  $result = db_query_range("SELECT slides FROM {tracking} WHERE slides <> '' AND slideset = '$container'", 0, 10);
+
+  $raw_tracking = $result->fetchAll();
+
+  db_set_active(); 
+  // without the paramater means set back to the default for the site
+
+  $tracking_count = array();
+
+  // Explode the information and tabulate the results
+  foreach ($raw_tracking as $tracking_row) {
+    foreach(explode(',', $tracking_row->slides) as $tracking_entity) {
+      if (!key_exists($tracking_entity, $tracking_count)) {
+        if($tracking_entity) $tracking_count[$tracking_entity] = 1;
+      } else {
+        $tracking_count[$tracking_entity]++;
+      }
+    }
+  }
+
+  // Sort by top amount first
+  arsort($tracking_count);
+
+  $i = 1;
+  foreach ($tracking_count as $tracking_name => $tracking_count) {
+    // Removes starting directories from title
+    $max = strlen($tracking_name);
+    $n = 0;
+    for($j=0;$j<$max;$j++){
+        if($tracking_name[$j]=='/'){
+            $n++;
+            if($n>=7){
+                break 1;
+            }
+        }
+    }
+    $tracking_name = substr($tracking_name,$j+1,$max);
+
+    // Remove all unnecessary strings from title
+    $slide_path = preg_replace('/...\-\-|slides\/|.ppt/', '', $tracking_name);
+    $slide_path = preg_replace('/0/', '', str_replace('/', ' - ', $slide_path));
+
+    $slide_count = (int)$tracking_count;
+
+    $chart_header[] = t($slide_path);
+    $chart_row[] = $slide_count;
+    if (++$i > 10) break;
+  }
+  
+
+  $colour_array = array('#0C6262', '#259797', '#58CBCB', '#65A347', '#92EC67', '#68D936', '#AAECBA', '#EBF992', '#DAF43C', '#8B9F14');
+
+  $tracking['chart']['tracking_chart'] = array(
+    'header' => $chart_header,
+    'rows' => array($chart_row),
+    'columns' => array('Slide Trends'),
+    'chartType' => 'PieChart',
+    'containerId' => 'slide-tracking-graph',
+    'options' => array(
+      'forceIFrame' => FALSE,
+      'width' => 660,
+      'height' => 300,
+      'colors' => $colour_array,
+      'legend' => 'none',
+      ),
+    );
+
+  return draw_chart($tracking); 
+}

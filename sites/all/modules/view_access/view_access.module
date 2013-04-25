@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * Preprocess function for views-view-fields.tpl.php.
+ */
+function view_access_preprocess_views_view_fields(&$variables) {
+  global $user;
+
+   // Checks to see if the view is the homepage
+  if ($variables['view']->name === 'home') {
+  	$user_role = og_get_user_roles('node', $variables['row']->nid, $user->uid);
+	$group_manager = in_array('group manager', $user_role);
+
+	if(!$group_manager) {
+	  unset($variables['fields']['nothing']);
+	}  
+  } 
+}

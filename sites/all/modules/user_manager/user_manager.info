@@ -1,0 +1,9 @@
+name = User Manager
+description = UI For a better User Management experience.
+package = Custom Modules
+core = 7.x
+
+version = 20130314-01
+
+dependencies[] = hierarchical_select
+dependencies[] = hs_smallhierarchy

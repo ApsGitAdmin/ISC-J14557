@@ -1,0 +1,279 @@
+/**
+ * @file
+ * Block Styling
+ */
+
+
+.block { /* Block wrapper */
+  margin-bottom: 1.5em;
+}
+
+.block.first { /* The first block in the region */
+}
+
+.block.last { /* The last block in the region */
+}
+
+.block.odd { /* Zebra striping for each block in the region */
+}
+
+.block.even { /* Zebra striping for each block in the region */
+}
+
+h2.block-title { /* Block title */
+}
+
+#block-aggregator-category-1 { /* Block for the latest news items in the first category */
+}
+
+#block-aggregator-feed-1 { /* Block for the latest news items in the first feed */
+}
+
+#block-block-1 { /* First block created with "Add block" link */
+}
+
+#block-blog-recent { /* "Recent blog posts" block */
+}
+
+#block-book-navigation { /* "Book navigation" block for the current book's table of contents */
+}
+
+#block-comment-recent { /* "Recent comments" block */
+}
+
+#block-forum-active { /* "Active forum topics" block */
+}
+
+#block-forum-new { /* "New forum topics" block */
+}
+
+#block-locale-language { /* Language switcher block */
+}
+
+#block-menu-menu-NAME { /* Custom menu block */
+}
+
+#block-node-recent { /* "Recent content" block */
+}
+
+#block-node-syndicate { /* "Syndicate" block for primary RSS feed; see also page.css's .feed-icon */
+}
+
+#block-poll-recent { /* "Most recent poll" block */
+}
+
+#block-profile-author-information { /* "Author information" block for the profile of the page's author */
+}
+
+#block-search-form { /* "Search form" block */
+}
+
+#block-shortcut-shortcuts { /* "Shortcuts" block */
+}
+
+#block-statistics-popular { /* "Popular content" block */
+}
+
+#block-system-main-menu { /* "Main menu" block */
+	background:#e8e8e8;
+}
+
+#block-system-main-menu h2 { /* "Main menu" block header */
+	font-size: 1em;
+	font-weight: normal;
+	background:#00acee;
+	padding:10px 0 5px 20px;
+	width: auto;
+	color: #fff;
+}
+
+#block-system-main-menu ul { /* "Main menu" list type styling */
+	margin:1em 0 1em 20px;
+	padding:0;
+	text-align: right;
+}
+
+#block-system-main-menu ul li {
+	background-color: #585858;
+	display: inline-block;
+	clear: both;
+}
+
+#block-system-main-menu ul a {
+	color:#fff;
+	display:block;
+	text-decoration: none;
+	padding:5px 20px;
+}
+
+#block-system-management { /* "Management" block for Drupal management menu */
+}
+
+#block-system-navigation { /* "Navigation" block for Drupal navigation menu */
+	border-bottom:solid 10px #00b4ed;
+	display: inline-block;
+	/*
+	position: absolute;
+	top: 600px;
+	*/
+	background:#e8e8e8;
+}
+
+#block-system-navigation ul { /* "Navigation" ul for Drupal navigation menu */
+	margin:0;
+	padding:0;
+}
+
+#block-system-navigation ul li a { /* "Navigation" link for Drupal navigation menu */
+	text-decoration: none;
+	display:block;
+	color: #000;
+	padding:4px 16px;
+}
+
+#block-views-player-form-block { /* View block for feedback form */
+	border-bottom:solid 10px #00b4ed;
+	display: inline-block;
+	/*
+	position: absolute;
+	top: 600px;
+	margin-left: 80px;
+	*/
+	background:#e8e8e8;
+	padding:4px 16px;
+}
+
+#block-views-player-form-block a {
+	text-decoration: none;
+	color: #000;
+}
+
+#block-system-user-menu { /* "User menu" block for Drupal user menu */
+	background:#e8e8e8;
+}
+
+#block-system-user-menu h2 { /* "User menu" block header */
+	font-size: 1em;
+	font-weight: normal;
+	background:#00acee;
+	padding:10px 0 5px 20px;
+	width: auto;
+	color: #fff;
+}
+
+#block-system-user-menu p {
+	margin: 1em 0 1em 20px;
+}
+
+#block-system-user-menu ul { /* "User menu" list type styling */
+	list-style-type: none;
+	margin:1em 0 0 20px;
+	padding:0;
+	text-align: right;
+}
+
+#block-system-user-menu ul li {
+	background-color: #585858;
+	display: inline-block;
+}
+
+#block-system-user-menu ul li a {
+	color:#fff;
+	display:block;
+	text-decoration: none;
+	padding:5px 20px;
+}
+
+#block-system-user-menu h2 { /* "User menu" header styling */
+	margin-bottom:1em;
+}
+
+#block-system-help { /* "System help" block */
+}
+
+#block-system-main { /* "Main page content" block */
+}
+
+#block-system-powered-by { /* "Powered by Drupal" block */
+}
+
+#block-user-login { /* "User login form" block */
+	background:#e8e8e8;
+	position: relative;
+	clear: both;
+}
+
+#block-user-login h2 { /* "User login form" block header */
+	font-size: 1em;
+	font-weight: normal;
+	background:#00acee;
+	padding:10px 0 5px 20px;
+	width: auto;
+	color: #fff;
+}
+
+#block-user-login .form-item { /* "User login" form styling */
+	margin:0.5em 0 0 20px;
+}
+
+#block-user-login label {
+	display:inline-block;
+	font-weight: normal;
+}
+
+#block-user-login input[type=text],
+#block-user-login input[type=password] {
+	position: absolute;
+	right:20px;
+}
+
+#block-user-login input[type=submit] {
+	min-width:100px;
+	margin-left: 196px;
+	border:none;
+	background-color: #585858;
+	color:#fff;
+	display:block;
+	text-decoration: none;
+	padding:5px 20px;
+}
+
+#block-user-new { /* "Who's new" block for a list of the newest users */
+}
+
+#block-user-online { /* "Who's online" block for a list of the online users */
+}
+
+#block-block-2 {
+	padding:0;
+}
+
+#block-block-2 h1 {
+	font-size: 2.5em;
+	line-height: 1em;
+	color:#00acee;
+	margin:0;
+	font-weight: normal;
+}
+
+#block-block-2 h2 {
+	line-height: 1em;
+	color:#00acee;
+	margin:0 0 1.2em 0;
+	font-weight: normal;
+}
+
+#block-block-2 p {
+	color:#666666;
+}
+
+#block-block-3 {
+	margin-left: 40px;
+	display:inline-block;
+}
+
+#block-block-3 a {
+	color: #333;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 10px;
+}
